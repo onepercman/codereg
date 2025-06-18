@@ -53,6 +53,18 @@ export const add = new Command()
       process.exit(1)
     }
 
+    // Get path interactively if not provided
+    let repoPath = options.path
+    if (!repoPath && !registry.path) {
+      const pathResponse = await prompts({
+        type: "text",
+        name: "path",
+        message:
+          "Enter the path from repository root to the code directory (press enter to use root):",
+      })
+      repoPath = pathResponse.path
+    }
+
     // Get file name interactively if not provided
     let fileName = options.file
     if (!fileName) {
@@ -65,21 +77,11 @@ export const add = new Command()
       fileName = fileResponse.file
     }
 
-    // Get path interactively if not provided
-    let repoPath = options.path
-    if (!repoPath) {
-      const pathResponse = await prompts({
-        type: "text",
-        name: "path",
-        message:
-          "Enter the path from repository root to the code directory (press enter to use root):",
-      })
-      repoPath = pathResponse.path
-    }
-
+    // If both config path and user path are empty, use root
+    const finalPath = repoPath || registry.path || ""
     const branch = options.branch || "main"
-    const filePathInRepo = repoPath
-      ? path.posix.join(repoPath, fileName)
+    const filePathInRepo = finalPath
+      ? path.posix.join(finalPath, fileName)
       : fileName
     const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
 
