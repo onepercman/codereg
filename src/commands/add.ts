@@ -88,7 +88,7 @@ export const add = new Command()
           type: "multiselect",
           name: "files",
           message: "Select files to fetch:",
-          choices: [{ title: "Select All", value: "all" }, ...files],
+          choices: files,
           hint: "- Space to select. Return to submit",
           suggest: async (input: string, choices: any[]) => {
             const searchTerm = input.toLowerCase()
