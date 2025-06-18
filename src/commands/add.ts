@@ -14,6 +14,29 @@ function getRawFileUrl(repoUrl: string, branch: string, filePath: string) {
   return `https://raw.githubusercontent.com/${repoPath}/${branch}/${filePath}`
 }
 
+async function getFilesList(repoUrl: string, branch: string, path: string) {
+  const repoPath = repoUrl
+    .replace("https://github.com/", "")
+    .replace(/\.git$/, "")
+  const apiUrl = `https://api.github.com/repos/${repoPath}/contents/${path}?ref=${branch}`
+
+  const res = await fetch(apiUrl)
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch files list: ${res.status} ${res.statusText}`,
+    )
+  }
+
+  const data = await res.json()
+  return data
+    .filter((item: any) => item.type === "file")
+    .map((item: any) => ({
+      title: item.name,
+      value: item.name,
+      description: item.path,
+    }))
+}
+
 // ✅ Command add
 export const add = new Command()
   .name("add")
@@ -53,37 +76,57 @@ export const add = new Command()
       process.exit(1)
     }
 
-    // Get file name interactively if not provided
-    let fileName = options.file
-    if (!fileName) {
-      const fileResponse = await prompts({
-        type: "text",
-        name: "file",
-        message: "Enter the file name to fetch:",
-        validate: value => (value.length > 0 ? true : "File name is required"),
-      })
-      fileName = fileResponse.file
-    }
-
     const branch = options.branch || "main"
-    const filePathInRepo =
-      options.path || registry.path
-        ? path.posix.join(options.path || registry.path || "", fileName)
-        : fileName
-    const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
+    const repoPath = options.path || registry.path || ""
 
-    logger.info(`Downloading: ${rawUrl}`)
+    // Get files list and let user select
+    let selectedFiles: string[] = []
+    if (!options.file) {
+      try {
+        const files = await getFilesList(registry.url, branch, repoPath)
+        const response = await prompts({
+          type: "multiselect",
+          name: "files",
+          message: "Select files to fetch:",
+          choices: [{ title: "Select All", value: "all" }, ...files],
+          hint: "- Space to select. Return to submit",
+        })
 
-    const res = await fetch(rawUrl)
-    if (!res.ok) {
-      logger.error(`Failed to fetch file: ${res.status} ${res.statusText}`)
-      process.exit(1)
+        if (response.files.includes("all")) {
+          selectedFiles = files.map((f: any) => f.value)
+        } else {
+          selectedFiles = response.files
+        }
+      } catch (error) {
+        logger.error(`Failed to fetch files list: ${error}`)
+        process.exit(1)
+      }
+    } else {
+      selectedFiles = [options.file]
     }
-    const fileContent = await res.text()
 
-    const localFilePath = path.resolve(registry.dirname, fileName)
-    await mkdir(path.dirname(localFilePath), { recursive: true })
-    await writeFile(localFilePath, fileContent, "utf-8")
+    // Download and save each selected file
+    for (const fileName of selectedFiles) {
+      const filePathInRepo = repoPath
+        ? path.posix.join(repoPath, fileName)
+        : fileName
+      const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
 
-    logger.success(`File saved to ${localFilePath}`)
+      logger.info(`Downloading: ${rawUrl}`)
+
+      const res = await fetch(rawUrl)
+      if (!res.ok) {
+        logger.error(
+          `Failed to fetch file ${fileName}: ${res.status} ${res.statusText}`,
+        )
+        continue
+      }
+      const fileContent = await res.text()
+
+      const localFilePath = path.resolve(registry.dirname, fileName)
+      await mkdir(path.dirname(localFilePath), { recursive: true })
+      await writeFile(localFilePath, fileContent, "utf-8")
+
+      logger.success(`File saved to ${localFilePath}`)
+    }
   })
