@@ -3,12 +3,7 @@
   "version": "1.0.0",
   "author": "onepercman",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/onepercman/codereg"
@@ -20,22 +15,38 @@
   "keywords": [
     "codereg"
   ],
+  "bin": {
+    "codereg": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
-  "files": [
-    "dist"
-  ],
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "compare-versions": "^6.1.1",
+    "cosmiconfig": "^9.0.0",
+    "execa": "^9.6.0",
+    "jsonata": "^2.0.6",
+    "lru-cache": "^11.1.0",
+    "ora": "^8.2.0",
+    "prompts": "^2.4.2",
+    "rimraf": "^6.0.1"
+  },
   "devDependencies": {
+    "@types/node": "^24.0.3",
+    "@types/prompts": "^2.4.9",
     "prettier": "^3.4.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "chalk": "^5.4.1"
   }
 }
