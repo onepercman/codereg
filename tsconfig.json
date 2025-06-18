@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "declaration": true,
+    "declarationMap": false,
+    "declarationDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "NodeNext",
+    "stripInternal": true,
+    "outDir": "dist",
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

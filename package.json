@@ -1,0 +1,41 @@
+{
+  "name": "codereg",
+  "version": "1.0.0",
+  "author": "onepercman",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onepercman/codereg"
+  },
+  "bugs": {
+    "url": "https://github.com/onepercman/codereg/issues"
+  },
+  "homepage": "https://github.com/onepercman/codereg",
+  "keywords": [
+    "codereg"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
+  }
+}
