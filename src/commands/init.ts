@@ -8,7 +8,7 @@ export const init = new Command()
   .action(async () => {
     const minimalConfig = {
       $schema:
-        "https://raw.githubusercontent.com/onepercman/codereg/blob/main/src/schema/config.schema.json",
+        "https://raw.githubusercontent.com/onepercman/codereg/main/src/schema/config.schema.json",
       registry: [],
     }
     await writeFile(
