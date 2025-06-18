@@ -1,8 +1,8 @@
 {
   "name": "codereg",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "onepercman",
-  "description": "",
+  "description": "A CLI tool for copying and managing source code directly from GitHub repositories, perfect for modern React UI libraries and custom code management.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,14 @@
   },
   "homepage": "https://github.com/onepercman/codereg",
   "keywords": [
-    "codereg"
+    "codereg",
+    "github",
+    "source-code",
+    "react",
+    "ui-libraries",
+    "cli",
+    "code-management",
+    "development-tools"
   ],
   "bin": {
     "codereg": "./dist/index.js"
