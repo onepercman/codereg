@@ -7,8 +7,7 @@ export const init = new Command()
   .description("initialize project with codereg")
   .action(async () => {
     const minimalConfig = {
-      $schema:
-        "https://raw.githubusercontent.com/onepercman/codereg/main/src/schema/config.schema.json",
+      $schema: "https://cdn.jsdelivr.net/npm/codereg/dist/config.schema.json",
       registry: [],
     }
     await writeFile(
