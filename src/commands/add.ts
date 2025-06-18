@@ -41,19 +41,12 @@ async function getFilesList(repoUrl: string, branch: string, path: string) {
 export const add = new Command()
   .name("add")
   .description("add a file from a registry repository to the project")
-  .option(
-    "-r, --registry <name>",
-    "Name of the registry defined in .codereg.config.json",
-  )
-  .option("-f, --file <name>", "Specific file name to fetch from the registry")
-  .option(
-    "-b, --branch <branch>",
-    "Git branch name to fetch from (default: main)",
-    "main",
-  )
+  .option("-r, --registry <name>", "Registry name defined in config")
+  .option("-f, --file <name>", "File name to fetch")
+  .option("-b, --branch <branch>", "Branch name (default: main)", "main")
   .option(
     "-p, --path <path>",
-    "Path from repository root to the code directory (overrides registry path)",
+    "Path from repository root to the code directory",
   )
   .action(async options => {
     // ✅ Validate config
