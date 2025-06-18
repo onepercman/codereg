@@ -23,7 +23,7 @@ Examples:
   $ codereg add --help
 
 Options for add command:
-  -r, --registry <name>    Registry name defined in config
+  -r, --registry <name>   Registry name defined in config
   -f, --file <name>       File name to fetch
   -b, --branch <branch>   Branch name (default: main)
   -p, --path <path>       Path from repository root to the code directory
