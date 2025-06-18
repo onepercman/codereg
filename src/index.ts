@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { add } from "@/commands/add"
 import { init } from "@/commands/init"
 import { Command } from "commander"
 import packageJson from "../package.json"
@@ -9,5 +10,6 @@ const program = new Command()
   .description("Code Registry CLI")
 
 program.addCommand(init)
+program.addCommand(add)
 
 program.parse()
