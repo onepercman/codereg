@@ -6,11 +6,12 @@
     "declarationMap": false,
     "declarationDir": "dist",
     "strict": true,
-    "esModuleInterop": true,
     "moduleResolution": "NodeNext",
     "stripInternal": true,
     "outDir": "dist",
     "allowJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
