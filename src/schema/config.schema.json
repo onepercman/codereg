@@ -28,27 +28,12 @@
             "type": "string",
             "description": "Destination directory path in the local project where files from this registry will be copied."
           },
-          "sources": {
-            "type": "array",
-            "description": "List of source directories within the repository.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name of this particular source (e.g., 'components', 'hooks')."
-                },
-                "url": {
-                  "type": "string",
-                  "description": "Relative path in the repository to this source directory (e.g., 'src/shared/components')."
-                }
-              },
-              "required": ["name", "url"],
-              "additionalProperties": false
-            }
+          "path": {
+            "type": "string",
+            "description": "Relative path in the repository to the source directory (e.g., 'packages/ui/src')."
           }
         },
-        "required": ["name", "url", "dirname", "sources"],
+        "required": ["name", "url", "dirname", "path"],
         "additionalProperties": false
       }
     }

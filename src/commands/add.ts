@@ -18,16 +18,10 @@ export const add = new Command()
   .name("add")
   .description("add a file from a registry repository to the project")
   .requiredOption("-r, --registry <name>", "Registry name defined in config")
-  .requiredOption("-s, --source <name>", "Source name defined in the registry")
   .requiredOption("-f, --file <name>", "File name to fetch")
   .option("-b, --branch <branch>", "Branch name (default: main)", "main")
   .action(async options => {
-    const {
-      registry: registryName,
-      source: sourceName,
-      file: fileName,
-      branch,
-    } = options
+    const { registry: registryName, file: fileName, branch } = options
 
     // ✅ Validate config
     const rawConfig = await readFile(CONFIG_FILE, "utf-8")
@@ -40,16 +34,7 @@ export const add = new Command()
       process.exit(1)
     }
 
-    // ✅ get source
-    const source = registry.sources.find(s => s.name === sourceName)
-    if (!source) {
-      logger.error(
-        `Source '${sourceName}' not found in registry '${registryName}'`,
-      )
-      process.exit(1)
-    }
-
-    const filePathInRepo = path.posix.join(source.url, fileName)
+    const filePathInRepo = path.posix.join(registry.path, fileName)
     const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
 
     logger.info(`Downloading: ${rawUrl}`)
