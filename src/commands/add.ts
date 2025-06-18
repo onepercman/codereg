@@ -90,6 +90,12 @@ export const add = new Command()
           message: "Select files to fetch:",
           choices: [{ title: "Select All", value: "all" }, ...files],
           hint: "- Space to select. Return to submit",
+          suggest: async (input: string, choices: any[]) => {
+            const searchTerm = input.toLowerCase()
+            return choices.filter(choice =>
+              choice.title.toLowerCase().startsWith(searchTerm),
+            )
+          },
         })
 
         if (response.files.includes("all")) {
