@@ -1,6 +1,29 @@
 # CodeReg
 
-A powerful command-line tool for code registration and management.
+A powerful command-line tool for copying and managing source code directly from GitHub repositories. Instead of installing libraries as dependencies, CodeReg allows you to copy specific source code files into your project, giving you full control over the code and making it easier to customize.
+
+## Key Features
+
+- Copy source code directly from GitHub repositories instead of installing packages
+- Perfect for modern React UI libraries that share source code rather than bundled packages
+- Interactive GUI-like CLI interface for easy code registration
+- Registry-based configuration system for managing multiple code sources
+- Support for copying any public files from GitHub repositories
+- Easy customization of copied code since it's directly in your project
+- Branch and path-specific code copying
+- Progress indicators and interactive prompts
+
+## Why CodeReg?
+
+In modern web development, especially with React UI libraries, there's a growing trend of sharing source code instead of bundled packages. This approach offers several advantages:
+
+- Full control over the code in your project
+- Easy customization and modification
+- No need to deal with complex bundling configurations
+- Direct access to source code for debugging and learning
+- Ability to modify and adapt code to your specific needs
+
+CodeReg makes this workflow seamless by providing a simple way to copy and manage source code from GitHub repositories.
 
 ## Installation
 
@@ -42,13 +65,6 @@ Or use it directly with npx:
 npx codereg
 ```
 
-## Features
-
-- Command-line interface for code registration
-- Configuration management
-- Interactive prompts
-- Progress indicators
-
 ## Usage
 
 ### Basic Commands
@@ -63,7 +79,7 @@ npx codereg init
 
 This will create a default configuration file `.codereg.config.json` in your project root.
 
-for example:
+Example configuration:
 
 ```json
 {
@@ -82,13 +98,19 @@ for example:
 
 #### Add Registration
 
-Add a new code registration:
+Add a new code registration using the interactive CLI:
 
 ```bash
 codereg add
 ```
 
-This will start an interactive prompt to guide you through the registration process.
+The interactive prompt will guide you through:
+
+- Selecting the registry
+- Choosing the branch
+- Specifying the source path
+- Selecting files to copy
+- Setting the destination directory
 
 ### Command Options
 
@@ -106,6 +128,25 @@ codereg add -r ui -b main -p /packages/ui/src -f button.tsx
 - `-f, --file`: Specify the file to register (e.g., 'button.tsx')
 - `--help` or `-h`: Show help information
 - `--version` or `-V`: Show version information
+
+## Use Cases
+
+### React UI Libraries
+
+CodeReg is particularly useful for modern React UI libraries that share source code. Instead of installing the entire package, you can copy only the components you need and customize them directly in your project.
+
+### Custom Code Management
+
+- Copy utility functions from public repositories
+- Share code between projects
+- Maintain a local registry of commonly used code snippets
+- Version control your custom code modifications
+
+### Learning and Experimentation
+
+- Study and learn from open-source code
+- Experiment with different implementations
+- Create your own modified versions of existing code
 
 ## Development
 
