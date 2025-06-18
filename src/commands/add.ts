@@ -3,6 +3,7 @@ import { logger } from "@/utils/logger"
 import { Command } from "commander"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import path from "path"
+import prompts from "prompts"
 
 const CONFIG_FILE = ".codereg.config.json"
 
@@ -17,15 +18,29 @@ function getRawFileUrl(repoUrl: string, branch: string, filePath: string) {
 export const add = new Command()
   .name("add")
   .description("add a file from a registry repository to the project")
-  .requiredOption("-r, --registry <name>", "Registry name defined in config")
-  .requiredOption("-f, --file <name>", "File name to fetch")
+  .option("-r, --registry <name>", "Registry name defined in config")
+  .option("-f, --file <name>", "File name to fetch")
   .option("-b, --branch <branch>", "Branch name (default: main)", "main")
   .action(async options => {
-    const { registry: registryName, file: fileName, branch } = options
-
     // ✅ Validate config
     const rawConfig = await readFile(CONFIG_FILE, "utf-8")
     const config = configSchema.parse(JSON.parse(rawConfig))
+
+    // Get registry name interactively if not provided
+    let registryName = options.registry
+    if (!registryName) {
+      const registryResponse = await prompts({
+        type: "select",
+        name: "registry",
+        message: "Select a registry:",
+        choices: config.registry.map(r => ({
+          title: r.name,
+          value: r.name,
+          description: r.url,
+        })),
+      })
+      registryName = registryResponse.registry
+    }
 
     // ✅ find registry
     const registry = config.registry.find(r => r.name === registryName)
@@ -34,7 +49,20 @@ export const add = new Command()
       process.exit(1)
     }
 
-    const filePathInRepo = path.posix.join(registry.path, fileName)
+    // Get file name interactively if not provided
+    let fileName = options.file
+    if (!fileName) {
+      const fileResponse = await prompts({
+        type: "text",
+        name: "file",
+        message: "Enter the file name to fetch:",
+        validate: value => (value.length > 0 ? true : "File name is required"),
+      })
+      fileName = fileResponse.file
+    }
+
+    const branch = options.branch || "main"
+    const filePathInRepo = path.posix.join(registry.dirname, fileName)
     const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
 
     logger.info(`Downloading: ${rawUrl}`)

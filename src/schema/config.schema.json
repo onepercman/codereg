@@ -27,13 +27,9 @@
           "dirname": {
             "type": "string",
             "description": "Destination directory path in the local project where files from this registry will be copied."
-          },
-          "path": {
-            "type": "string",
-            "description": "Relative path in the repository to the source directory (e.g., 'packages/ui/src')."
           }
         },
-        "required": ["name", "url", "dirname", "path"],
+        "required": ["name", "url", "dirname"],
         "additionalProperties": false
       }
     }
