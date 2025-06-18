@@ -21,6 +21,10 @@ export const add = new Command()
   .option("-r, --registry <name>", "Registry name defined in config")
   .option("-f, --file <name>", "File name to fetch")
   .option("-b, --branch <branch>", "Branch name (default: main)", "main")
+  .option(
+    "-p, --path <path>",
+    "Path from repository root to the code directory",
+  )
   .action(async options => {
     // ✅ Validate config
     const rawConfig = await readFile(CONFIG_FILE, "utf-8")
@@ -61,8 +65,22 @@ export const add = new Command()
       fileName = fileResponse.file
     }
 
+    // Get path interactively if not provided
+    let repoPath = options.path
+    if (!repoPath) {
+      const pathResponse = await prompts({
+        type: "text",
+        name: "path",
+        message:
+          "Enter the path from repository root to the code directory (press enter to use root):",
+      })
+      repoPath = pathResponse.path
+    }
+
     const branch = options.branch || "main"
-    const filePathInRepo = path.posix.join(registry.dirname, fileName)
+    const filePathInRepo = repoPath
+      ? path.posix.join(repoPath, fileName)
+      : fileName
     const rawUrl = getRawFileUrl(registry.url, branch, filePathInRepo)
 
     logger.info(`Downloading: ${rawUrl}`)

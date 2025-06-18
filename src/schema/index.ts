@@ -13,6 +13,12 @@ export const registrySchema = z.object({
     .describe(
       "Destination directory path in the local project where files from this registry will be copied",
     ),
+  path: z
+    .string()
+    .describe(
+      "Path from repository root to the directory containing source code",
+    )
+    .optional(),
 })
 
 export const configSchema = z

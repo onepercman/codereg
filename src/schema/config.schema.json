@@ -27,6 +27,10 @@
           "dirname": {
             "type": "string",
             "description": "Destination directory path in the local project where files from this registry will be copied."
+          },
+          "path": {
+            "type": "string",
+            "description": "Additional path configuration for the registry."
           }
         },
         "required": ["name", "url", "dirname"],
