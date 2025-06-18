@@ -4,6 +4,11 @@
   "description": "Schema for defining registries and their sources used by the CLI tool.",
   "type": "object",
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional schema reference for IDEs and editors to provide auto-completion and validation."
+    },
     "registry": {
       "type": "array",
       "description": "List of registry entries containing repository and source definitions.",

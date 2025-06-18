@@ -13,5 +13,6 @@ export const registrySchema = z.object({
 })
 
 export const configSchema = z.object({
+  $schema: z.string().url().optional(),
   registry: z.array(registrySchema),
 })
