@@ -19,6 +19,12 @@ export const registrySchema = z.object({
       "Path from repository root to the directory containing source code",
     )
     .optional(),
+  branch: z
+    .string()
+    .describe(
+      "The branch name to use when fetching files from the repository (default: main)",
+    )
+    .optional(),
 })
 
 export const configSchema = z

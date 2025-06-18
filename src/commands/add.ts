@@ -76,7 +76,7 @@ export const add = new Command()
       process.exit(1)
     }
 
-    const branch = options.branch || "main"
+    const branch = options.branch || registry.branch || "main"
     const repoPath = options.path || registry.path || ""
 
     // Get files list and let user select

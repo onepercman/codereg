@@ -31,6 +31,10 @@
           "path": {
             "type": "string",
             "description": "Additional path configuration for the registry."
+          },
+          "branch": {
+            "type": "string",
+            "description": "The branch name to use when fetching files from the repository (default: main)."
           }
         },
         "required": ["name", "url", "dirname"],
