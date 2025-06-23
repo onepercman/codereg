@@ -1,41 +1,14 @@
+import { confirmOrQuit } from "@/prompts/confirm-or-quit"
+import { promptSelectFiles } from "@/prompts/file"
+import { promptSelectRegistry } from "@/prompts/registry"
 import { configSchema } from "@/schema"
+import { getFilesList, getRawFileUrl } from "@/services/registry"
 import { logger } from "@/utils/logger"
 import { Command } from "commander"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import path from "path"
-import prompts from "prompts"
 
 const CONFIG_FILE = ".codereg.config.json"
-
-function getRawFileUrl(repoUrl: string, branch: string, filePath: string) {
-  const repoPath = repoUrl
-    .replace("https://github.com/", "")
-    .replace(/\.git$/, "")
-  return `https://raw.githubusercontent.com/${repoPath}/${branch}/${filePath}`
-}
-
-async function getFilesList(repoUrl: string, branch: string, path: string) {
-  const repoPath = repoUrl
-    .replace("https://github.com/", "")
-    .replace(/\.git$/, "")
-  const apiUrl = `https://api.github.com/repos/${repoPath}/contents/${path}?ref=${branch}`
-
-  const res = await fetch(apiUrl)
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch files list: ${res.status} ${res.statusText}`,
-    )
-  }
-
-  const data = await res.json()
-  return data
-    .filter((item: any) => item.type === "file")
-    .map((item: any) => ({
-      title: item.name,
-      value: item.name,
-      description: item.path,
-    }))
-}
 
 // ✅ Command add
 export const add = new Command()
@@ -49,27 +22,17 @@ export const add = new Command()
     "Path from repository root to the code directory",
   )
   .action(async options => {
-    // ✅ Validate config
+    // Read and validate config file
     const rawConfig = await readFile(CONFIG_FILE, "utf-8")
     const config = configSchema.parse(JSON.parse(rawConfig))
 
-    // Get registry name interactively if not provided
+    // Select registry interactively if not provided
     let registryName = options.registry
     if (!registryName) {
-      const registryResponse = await prompts({
-        type: "select",
-        name: "registry",
-        message: "Select a registry:",
-        choices: config.registry.map(r => ({
-          title: r.name,
-          value: r.name,
-          description: r.url,
-        })),
-      })
-      registryName = registryResponse.registry
+      registryName = await promptSelectRegistry(config.registry)
     }
 
-    // ✅ find registry
+    // Find registry by name
     const registry = config.registry.find(r => r.name === registryName)
     if (!registry) {
       logger.error(`Registry '${registryName}' not found in ${CONFIG_FILE}`)
@@ -79,30 +42,12 @@ export const add = new Command()
     const branch = options.branch || registry.branch || "main"
     const repoPath = options.path || registry.path || ""
 
-    // Get files list and let user select
+    // Select files interactively if not provided
     let selectedFiles: string[] = []
     if (!options.file) {
       try {
         const files = await getFilesList(registry.url, branch, repoPath)
-        const response = await prompts({
-          type: "multiselect",
-          name: "files",
-          message: "Select files to fetch:",
-          choices: files,
-          hint: "- Space to select. Return to submit",
-          suggest: async (input: string, choices: any[]) => {
-            const searchTerm = input.toLowerCase()
-            return choices.filter(choice =>
-              choice.title.toLowerCase().startsWith(searchTerm),
-            )
-          },
-        })
-
-        if (response.files.includes("all")) {
-          selectedFiles = files.map((f: any) => f.value)
-        } else {
-          selectedFiles = response.files
-        }
+        selectedFiles = await promptSelectFiles(files)
       } catch (error) {
         logger.error(`Failed to fetch files list: ${error}`)
         process.exit(1)
@@ -130,9 +75,19 @@ export const add = new Command()
       const fileContent = await res.text()
 
       const localFilePath = path.resolve(registry.dirname, fileName)
-      await mkdir(path.dirname(localFilePath), { recursive: true })
-      await writeFile(localFilePath, fileContent, "utf-8")
-
-      logger.success(`File saved to ${localFilePath}`)
+      let shouldWrite = true
+      try {
+        // Check if file already exists
+        await readFile(localFilePath, "utf-8")
+        // Ask user for confirmation before overwriting
+        await confirmOrQuit(`File ${localFilePath} exists. Overwrite?`)
+      } catch (e) {
+        // File does not exist, proceed to write
+      }
+      if (shouldWrite) {
+        await mkdir(path.dirname(localFilePath), { recursive: true })
+        await writeFile(localFilePath, fileContent, "utf-8")
+        logger.success(`File saved to ${localFilePath}`)
+      }
     }
   })

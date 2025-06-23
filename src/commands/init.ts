@@ -1,6 +1,7 @@
+import { confirmOrQuit } from "@/prompts/confirm-or-quit"
 import { logger } from "@/utils/logger"
 import { Command } from "commander"
-import { writeFile } from "fs/promises"
+import { readFile, writeFile } from "fs/promises"
 
 export const init = new Command()
   .name("init")
@@ -10,10 +11,21 @@ export const init = new Command()
       $schema: "https://cdn.jsdelivr.net/npm/codereg/dist/config.schema.json",
       registry: [],
     }
-    await writeFile(
-      ".codereg.config.json",
-      JSON.stringify(minimalConfig, null, 2),
-      "utf-8",
-    )
-    logger.success("Project initialization completed.")
+    let shouldWrite = true
+    try {
+      // Check if config file already exists
+      await readFile(".codereg.config.json", "utf-8")
+      // Ask user for confirmation before overwriting
+      await confirmOrQuit(".codereg.config.json exists. Overwrite?")
+    } catch (e) {
+      // File does not exist, proceed to write
+    }
+    if (shouldWrite) {
+      await writeFile(
+        ".codereg.config.json",
+        JSON.stringify(minimalConfig, null, 2),
+        "utf-8",
+      )
+      logger.success("Project initialization completed.")
+    }
   })
