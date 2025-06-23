@@ -75,7 +75,6 @@ export const add = new Command()
       const fileContent = await res.text()
 
       const localFilePath = path.resolve(registry.dirname, fileName)
-      let shouldWrite = true
       try {
         // Check if file already exists
         await readFile(localFilePath, "utf-8")
@@ -84,10 +83,8 @@ export const add = new Command()
       } catch (e) {
         // File does not exist, proceed to write
       }
-      if (shouldWrite) {
-        await mkdir(path.dirname(localFilePath), { recursive: true })
-        await writeFile(localFilePath, fileContent, "utf-8")
-        logger.success(`File saved to ${localFilePath}`)
-      }
+      await mkdir(path.dirname(localFilePath), { recursive: true })
+      await writeFile(localFilePath, fileContent, "utf-8")
+      logger.success(`File saved to ${localFilePath}`)
     }
   })
