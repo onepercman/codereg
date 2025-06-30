@@ -1,3 +1,5 @@
+import { getFileDisplayName } from "@/utils/file-icons"
+
 export function getRawFileUrl(
   repoUrl: string,
   branch: string,
@@ -30,7 +32,7 @@ export async function getFilesList(
   return data
     .filter((item: any) => item.type === "file")
     .map((item: any) => ({
-      title: item.name,
+      title: getFileDisplayName(item.name),
       value: item.name,
       description: item.path,
     }))
